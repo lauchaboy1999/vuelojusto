@@ -1,0 +1,23 @@
+{
+  "name": "VueloJusto · Compara vuelos baratos",
+  "short_name": "VueloJusto",
+  "description": "Compara vuelos, descubre desde qué aeropuerto te conviene salir y viaja pagando menos.",
+  "lang": "es",
+  "start_url": "./#buscar",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b5cff",
+  "theme_color": "#0b5cff",
+  "categories": ["travel"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "shortcuts": [
+    { "name": "Explorar destinos", "url": "./#explorar" },
+    { "name": "Mis alertas", "url": "./#alertas" }
+  ]
+}

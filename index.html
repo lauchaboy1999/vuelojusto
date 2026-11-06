@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>VueloJusto · Compara vuelos baratos</title>
+  <meta name="description" content="Compara vuelos, encuentra el aeropuerto más conveniente para salir y viaja pagando menos.">
+  <meta name="theme-color" content="#0b5cff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#buscar" aria-label="VueloJusto, inicio">
+      <span class="brand-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>
+      </span>
+      <span>Vuelo<b>Justo</b></span>
+    </a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#buscar" data-view="buscar">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Buscar</span>
+      </a>
+      <a href="#explorar" data-view="explorar">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><span>Explorar</span>
+      </a>
+      <a href="#alertas" data-view="alertas">
+        <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span>Alertas</span><i class="badge-count" id="alertCount" hidden></i>
+      </a>
+      <a href="#guia" data-view="guia">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg><span>Guía</span>
+      </a>
+    </nav>
+    <div class="top-actions">
+      <select id="currency" class="pill-select" aria-label="Moneda">
+        <option value="EUR">€ EUR</option>
+        <option value="USD">$ USD</option>
+        <option value="MXN">$ MXN</option>
+        <option value="COP">$ COP</option>
+      </select>
+      <button id="themeToggle" class="icon-btn" type="button" aria-label="Cambiar tema claro/oscuro">
+        <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ BUSCAR ============ -->
+    <section id="view-buscar" class="view" aria-labelledby="hero-title">
+      <div class="hero">
+        <div class="hero-inner">
+          <h1 id="hero-title">Encuentra el vuelo justo,<br><span>al precio más bajo</span></h1>
+          <p class="hero-sub">Comparamos aerolíneas, fechas y aeropuertos cercanos para decirte desde dónde te conviene salir.</p>
+
+          <form id="searchForm" class="search-card" novalidate>
+            <div class="trip-type" role="radiogroup" aria-label="Tipo de viaje">
+              <label><input type="radio" name="trip" value="rt" checked><span>Ida y vuelta</span></label>
+              <label><input type="radio" name="trip" value="ow"><span>Solo ida</span></label>
+            </div>
+
+            <div class="fields">
+              <div class="field field-place">
+                <label for="origin">Origen</label>
+                <div class="combo">
+                  <svg viewBox="0 0 24 24" class="field-ico"><path d="M2 22h20M6.4 17.6 3 11.5l2-.9 3 2.4 4.2-1.6-5-6.6 2.4-1 7.4 5 4.2-1.6a2 2 0 0 1 1.5 3.7z"/></svg>
+                  <input id="origin" autocomplete="off" placeholder="¿Desde dónde?" role="combobox" aria-expanded="false" aria-controls="origin-list">
+                  <ul class="combo-list" id="origin-list" role="listbox"></ul>
+                </div>
+              </div>
+              <button type="button" id="swapBtn" class="swap" aria-label="Intercambiar origen y destino">
+                <svg viewBox="0 0 24 24"><path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></svg>
+              </button>
+              <div class="field field-place">
+                <label for="dest">Destino</label>
+                <div class="combo">
+                  <svg viewBox="0 0 24 24" class="field-ico"><path d="M2 22h20M3.8 14.4l-1-3.6 2.1-.3 2.6 2.8 4.5-.6-3.2-7.6 2.6-.4 5.8 6.8 4.5-.6a2 2 0 0 1 .6 4z"/></svg>
+                  <input id="dest" autocomplete="off" placeholder="¿A dónde?" role="combobox" aria-expanded="false" aria-controls="dest-list">
+                  <ul class="combo-list" id="dest-list" role="listbox"></ul>
+                </div>
+              </div>
+              <div class="field">
+                <label for="depDate">Salida</label>
+                <input type="date" id="depDate" required>
+              </div>
+              <div class="field" id="retField">
+                <label for="retDate">Regreso</label>
+                <input type="date" id="retDate">
+              </div>
+              <div class="field field-sm">
+                <label for="pax">Viajeros</label>
+                <select id="pax">
+                  <option value="1">1 adulto</option><option value="2">2 adultos</option><option value="3">3 adultos</option>
+                  <option value="4">4 adultos</option><option value="5">5 adultos</option><option value="6">6 adultos</option>
+                </select>
+              </div>
+              <div class="field field-sm">
+                <label for="cabin">Clase</label>
+                <select id="cabin">
+                  <option value="eco">Turista</option>
+                  <option value="prem">Premium</option>
+                  <option value="bus">Business</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="search-foot">
+              <div class="toggles">
+                <label class="switch"><input type="checkbox" id="nearbyToggle" checked><span class="track"></span>Comparar aeropuertos cercanos</label>
+                <label class="switch"><input type="checkbox" id="bagToggle"><span class="track"></span>Precio con maleta facturada</label>
+              </div>
+              <button class="btn btn-primary btn-lg" type="submit">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                Buscar vuelos
+              </button>
+            </div>
+            <p class="form-error" id="formError" role="alert" hidden></p>
+          </form>
+
+          <div class="quick-chips" id="quickChips"></div>
+        </div>
+      </div>
+
+      <!-- Estado vacío: por qué usar la app -->
+      <div class="features" id="features">
+        <article class="feature">
+          <div class="f-ico">📍</div>
+          <h3>Aeropuertos alternativos</h3>
+          <p>Te mostramos si salir desde un aeropuerto cercano te ahorra dinero, incluso sumando el transporte hasta él.</p>
+        </article>
+        <article class="feature">
+          <div class="f-ico">📅</div>
+          <h3>Fechas flexibles</h3>
+          <p>Mira de un vistazo cuánto cuesta volar unos días antes o después.</p>
+        </article>
+        <article class="feature">
+          <div class="f-ico">🧳</div>
+          <h3>Precio real</h3>
+          <p>Las tarifas low cost parecen baratas hasta que sumas la maleta. Aquí la ves incluida.</p>
+        </article>
+        <article class="feature">
+          <div class="f-ico">🔔</div>
+          <h3>Alertas de precio</h3>
+          <p>Guarda una ruta y vuelve a mirarla cuando quieras: verás si bajó o subió.</p>
+        </article>
+      </div>
+
+      <!-- Resultados -->
+      <div id="results" class="results" hidden>
+        <div class="results-head">
+          <div>
+            <h2 id="resTitle">Resultados</h2>
+            <p class="muted" id="resSub"></p>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-ghost" id="alertBtn" type="button">
+              <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+              <span>Crear alerta</span>
+            </button>
+            <button class="btn btn-ghost" id="shareBtn" type="button">
+              <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
+              <span>Compartir</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="insights" id="insights"></div>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h3>Fechas flexibles</h3>
+            <span class="muted small" id="stripNote"></span>
+          </div>
+          <div class="date-strip" id="dateStrip"></div>
+        </section>
+
+        <section class="panel" id="recoPanel"></section>
+
+        <div class="results-body">
+          <aside class="filters" id="filters" aria-label="Filtros">
+            <div class="filters-head">
+              <h3>Filtros</h3>
+              <button class="link-btn" id="resetFilters" type="button">Restablecer</button>
+              <button class="icon-btn close-filters" id="closeFilters" type="button" aria-label="Cerrar filtros">✕</button>
+            </div>
+            <div id="filtersBody"></div>
+            <button class="btn btn-primary apply-filters" id="applyFilters" type="button">Ver resultados</button>
+          </aside>
+          <div class="list-wrap">
+            <div class="list-toolbar">
+              <div class="sort-tabs" id="sortTabs" role="tablist"></div>
+              <button class="btn btn-ghost open-filters" id="openFilters" type="button">
+                <svg viewBox="0 0 24 24"><path d="M3 6h18M7 12h10M10 18h4"/></svg> Filtros
+              </button>
+            </div>
+            <div id="flightList" class="flight-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EXPLORAR ============ -->
+    <section id="view-explorar" class="view" hidden>
+      <div class="page-head">
+        <h1>Explora destinos baratos</h1>
+        <p class="muted">¿Tienes ganas de viajar pero no sabes a dónde? Elige tu ciudad y te mostramos los destinos más económicos.</p>
+      </div>
+      <div class="explore-controls panel">
+        <div class="field">
+          <label for="exOrigin">Desde</label>
+          <div class="combo">
+            <svg viewBox="0 0 24 24" class="field-ico"><path d="M2 22h20M6.4 17.6 3 11.5l2-.9 3 2.4 4.2-1.6-5-6.6 2.4-1 7.4 5 4.2-1.6a2 2 0 0 1 1.5 3.7z"/></svg>
+            <input id="exOrigin" autocomplete="off" placeholder="Tu ciudad" role="combobox" aria-expanded="false" aria-controls="exOrigin-list">
+            <ul class="combo-list" id="exOrigin-list" role="listbox"></ul>
+          </div>
+        </div>
+        <div class="field">
+          <label for="exMonth">Cuándo</label>
+          <select id="exMonth"></select>
+        </div>
+        <div class="field">
+          <label for="exBudget">Presupuesto máx. <b id="exBudgetVal"></b></label>
+          <input type="range" id="exBudget" min="50" max="1500" step="25" value="1500">
+        </div>
+        <div class="chip-row" id="exRegions" role="group" aria-label="Región"></div>
+      </div>
+      <div class="dest-grid" id="destGrid"></div>
+    </section>
+
+    <!-- ============ ALERTAS ============ -->
+    <section id="view-alertas" class="view" hidden>
+      <div class="page-head">
+        <h1>Tus alertas de precio</h1>
+        <p class="muted">Rutas que estás vigilando. Comparamos el precio de hoy con el que tenía cuando la guardaste.</p>
+      </div>
+      <div id="alertList" class="alert-list"></div>
+    </section>
+
+    <!-- ============ GUÍA ============ -->
+    <section id="view-guia" class="view" hidden>
+      <div class="page-head">
+        <h1>Guía para volar barato</h1>
+        <p class="muted">Conceptos clave que usan los viajeros expertos para pagar menos.</p>
+      </div>
+      <div class="guide-grid" id="guideGrid"></div>
+      <section class="panel">
+        <h2 class="h-sm">Checklist antes de pagar</h2>
+        <ul class="checklist" id="checklist"></ul>
+      </section>
+      <section class="panel">
+        <h2 class="h-sm">Glosario</h2>
+        <div class="glossary" id="glossary"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p><b>VueloJusto</b> es una demostración: los precios se calculan con un modelo de estimación y pueden diferir de las tarifas reales. Antes de comprar, confirma el precio en la web de la aerolínea o del buscador.</p>
+  </footer>
+
+  <!-- Hoja de reserva -->
+  <div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+  <div class="sheet" id="bookSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+    <div class="sheet-grip"></div>
+    <h3 id="sheetTitle">Ver esta oferta</h3>
+    <div id="sheetBody"></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
